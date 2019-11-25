@@ -1,4 +1,4 @@
-(ns cadastro-de-pessoa.shared
+(ns cpf-cnpj-spec.shared
   (:refer-clojure :exclude [format]))
 
 ;;; Utils
@@ -26,8 +26,8 @@
 
 (defn parse
   [code]
-  {:pre [(or (string? code) (sequential? code))]}
-  (if (string? code) (digits code) code))
+  {:pre [(string? code)]}
+  (digits code))
 
 (defn split-control
   "Returns a tuple of [code control-digits],
@@ -42,7 +42,6 @@
        (insert-indexed index->x)
        (apply str)))
 
-
 ;;; Random helpers
 
 (defn generate-valid
@@ -55,7 +54,6 @@
   "Returns a seq of n random digits."
   [n]
   (repeatedly n #(rand-int 10)))
-
 
 ;;; The formula
 

@@ -1,44 +1,42 @@
-(ns cadastro-de-pessoa.cpf-test
-  (:require [cadastro-de-pessoa.cpf :as cpf]
+(ns cpf-cnpj-spec.cpf-test
+  (:require [cpf-cnpj-spec.cpf :as cpf]
             [clojure.test :refer :all]))
 
 (deftest cpf-test
   (testing "valid-cpfs"
     (are [cpf] (cpf/valid? cpf)
-      "437.647.838-50"
-      "801.483.391-07"
-      "725.403.322-50"
-      "270.604.973-15"
-      [4 3 7 6 4 7 8 3 8 5 0]))
+         "43764783850"
+         "80148339107"
+         "72540332250"
+         "27060497315"))
 
   (testing "invalid cpfs"
     (are [cpf] (not (cpf/valid? cpf))
-      "437.647.835-50"
-      "437.674.838-50"
-      "347.647.838-50"
-      "270.604.973-25"
-      "270.604.873-15"
-      "666.666.666-66"
-      [4 3 7 6 4 7 8 8 3 5 0])))
+         "43764783550"
+         "43767483850"
+         "34764783850"
+         "27060497325"
+         "27060487315"
+         "66666666666")))
 
 (deftest formatted?-test
   (testing "formatted right"
     (are [cpf] (cpf/formatted? cpf)
-      "270.604.973-25"
-      "270.604.873-15"
-      "270.604.873-15"
-      "666.666.666-66"))
+         "270.604.973-25"
+         "270.604.873-15"
+         "270.604.873-15"
+         "666.666.666-66"))
 
   (testing "formatted wrong"
     (are [cpf] (not (cpf/formatted? cpf))
-      "270.604.973x25"
-      "27.060.4873-15"
-      "270.604.87csd3-15"
-      "66666666666")))
+         "270.604.973x25"
+         "27.060.4873-15"
+         "270.604.87csd3-15"
+         "66666666666")))
 
 (deftest format-test
   (testing "formats right"
-    (is (= (cpf/format (concat (range 10) [0])) "012.345.678-90"))
+    (is (= (cpf/format "01234567890") "012.345.678-90"))
     (is (= (cpf/format "27.060.4873-15") "270.604.873-15")))
 
   (testing "incomplete cpf"
