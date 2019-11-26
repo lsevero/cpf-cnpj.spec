@@ -66,8 +66,7 @@
 (defn generate-formatted
   "Generates a random valid formatted cpf"
   []
-  (let [digits (shared/rand-digits (- length 2))]
-    (format (concat digits (control-digits digits)))))
+  (format (generate)))
 
 (s/def ::valid?
   (s/with-gen valid? #(gen/return (generate))))
