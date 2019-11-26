@@ -1,4 +1,4 @@
-(defproject cpf-cnpj.spec "0.1.0-SNAPSHOT"
+(defproject cpf-cnpj.spec "0.1.0"
   :description "Some utils for working with cpfs and cnpjs and clojure.spec."
   :url "https://github.com/lsevero/cpf-cnpj.spec"
   :license {:name "Eclipse Public License"

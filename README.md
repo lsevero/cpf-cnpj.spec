@@ -2,7 +2,9 @@
 
 Specs para validar e gerar CPFs e CNPJs valido usando clojure.spec.
 
-Baseado em [https://github.com/madstap/cadastro-de-pessoa](cadastro-de-pessoa)
+[![Clojars Project](https://img.shields.io/clojars/v/cpf-cnpj.spec.svg)](https://clojars.org/cpf-cnpj.spec)
+
+Baseado em [cadastro-de-pessoa](https://github.com/madstap/cadastro-de-pessoa)
 
 ## Usage
 
