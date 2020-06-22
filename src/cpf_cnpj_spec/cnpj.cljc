@@ -4,14 +4,14 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]))
 
-(def length 14)
+(def ^:const length 14)
 
-(def ^:private mask1   [5 4 3 2 9 8 7 6 5 4 3 2])
-(def ^:private mask2 [6 5 4 3 2 9 8 7 6 5 4 3 2])
+(def ^:const ^:private mask1   [5 4 3 2 9 8 7 6 5 4 3 2])
+(def ^:const ^:private mask2 [6 5 4 3 2 9 8 7 6 5 4 3 2])
 
 (def control-digits (partial shared/control-digits mask1 mask2))
 
-(def repeated
+(def ^:const repeated
   "A set of cnpjs with repeated digits that are
   considered valid by the algorithm, but normally shouldn't count as valid."
   (set (for [i (range 10)
@@ -22,33 +22,43 @@
   "Takes a string. Returns true if valid, else false.
   Does not validate formatting."
   [cnpj]
-  {:pre [(string? cnpj)]}
-  (let [cnpj (shared/parse cnpj)
-        [digits control] (shared/split-control cnpj)]
-    (and (= length (count cnpj))
-         (not (repeated cnpj))
-         (= control (control-digits digits)))))
+  (try
+    (let [cnpj (shared/parse cnpj)
+          [digits control] (shared/split-control cnpj)]
+      (and (= length (count cnpj))
+           (not (repeated cnpj))
+           (= control (control-digits digits))))
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
 (defn valid?
   "Takes a string. Returns true if valid, else false."
   [cnpj]
-  (if (= (count cnpj) length)
-    (valid-impl? cnpj)
-    false))
+  (try 
+    (if (= (count cnpj) length)
+      (valid-impl? cnpj)
+      false)
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
 (defn valid-int?
   "Takes a integer and validade it as a cnpj"
   [cnpj]
-  {:pre [(pos-int? cnpj)]}
-  (valid-impl? (clojure.core/format (str "%0" length "d") cnpj)))
+  (try
+    (valid-impl? (clojure.core/format (str "%0" length "d") cnpj))
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
-(def regex #"^[0-9]{2}\.[0-9]{3}\.[0-9]{3}/[0-9]{4}-[0-9]{2}$")
+(def ^:const regex #"^[0-9]{2}\.[0-9]{3}\.[0-9]{3}/[0-9]{4}-[0-9]{2}$")
 
 (defn formatted?
   "Is the cnpj formatted correctly?"
   [cnpj]
-  (boolean
-    (and (string? cnpj) (re-find regex cnpj) (valid-impl? cnpj))))
+  (try
+    (boolean
+      (and (string? cnpj) (re-find regex cnpj) (valid-impl? cnpj)))
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
 (defn format
   "Returns a string of the correctly formatted cnpj"

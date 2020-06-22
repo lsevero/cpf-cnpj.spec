@@ -4,7 +4,7 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]))
 
-(def length 11)
+(def ^:const length 11)
 
 (def ^:private control-digits
   (partial shared/control-digits (range 10 1 -1) (range 11 1 -1)))
@@ -20,32 +20,43 @@
   A cpf
   Does not validate formatting."
   [cpf]
-  (let [cpf (shared/parse cpf)
-        [digits control] (shared/split-control cpf)]
-    (and (= length (count cpf))
-         (not (repeated cpf))
-         (= control (control-digits digits)))))
+  (try
+    (let [cpf (shared/parse cpf)
+          [digits control] (shared/split-control cpf)]
+      (and (= length (count cpf))
+           (not (repeated cpf))
+           (= control (control-digits digits))))
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
 (defn valid?
   "Takes a string. Returns true if valid, else false."
   [cpf]
-  (if (= (count cpf) length)
-    (valid-impl? cpf)
-    false))
+  (try
+    (if (= (count cpf) length)
+      (valid-impl? cpf)
+      false)
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
 (defn valid-int?
   "Takes a integer and validade it as a cpf"
   [cpf]
-  {:pre [(pos-int? cpf)]}
-  (valid-impl? (clojure.core/format (str "%0" length "d") cpf)))
+  (try
+    (valid-impl? (clojure.core/format (str "%0" length "d") cpf))
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
-(def regex #"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$")
+(def ^:const regex #"^[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}$")
 
 (defn formatted?
   "Is the cpf formatted correctly?"
   [cpf]
-  (boolean
-    (and (string? cpf) (re-find regex cpf))))
+  (try
+    (boolean
+      (and (string? cpf) (re-find regex cpf)))
+    (catch #?(:clj Exception
+              :cljs :default) e false)))
 
 (defn format
   "Returns a string of the correctly formatted cpf"
